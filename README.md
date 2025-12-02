@@ -24,9 +24,49 @@ This tool is specifically designed for:
 ```bash
 # Clone the repository
 git clone https://github.com/Shanmukhasrisai/go-vuln-scanner.git
+
 # Navigate to the project directory
 cd go-vuln-scanner
-# Build the project
-go build -o govulnscanner .
-# Run the scanner
+
+# Build the project (binary will be created in current directory)
+go build -o govulnscanner cmd/govulnscanner/main.go
+
+# Optional: Install to GOPATH/bin for system-wide access
+go install ./cmd/govulnscanner
+
+# Run the scanner from the project directory
 ./govulnscanner --target https://example.com
+
+# Or run from anywhere if installed to GOPATH/bin
+govulnscanner --target https://example.com
+```
+
+### Installation Path Structure
+```
+go-vuln-scanner/
+├── cmd/
+│   └── govulnscanner/
+│       └── main.go          # Main entry point
+├── pkg/                      # Package source code
+├── templates/                # Vulnerability templates
+├── README.md
+└── govulnscanner            # Compiled binary (after build)
+```
+
+## Examples
+### Example 1: Quick Web Application Scan
+```bash
+./govulnscanner --target https://mywebapp.com --output scan-report.json
+```
+### Example 2: Comprehensive Network Scan
+```bash
+./govulnscanner --target-list network-hosts.txt --threads 25 --timeout 30 --verbose
+```
+### Example 3: Targeted Vulnerability Assessment
+```bash
+./govulnscanner --target https://api.example.com --tags cve,exposure --severity critical --output critical-vulnerabilities.json
+```
+## Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
+## License
+This project is open source and available under the MIT License.
