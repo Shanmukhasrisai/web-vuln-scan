@@ -5,6 +5,7 @@
 GoVulnScanner is a fast and flexible web application penetration testing tool designed for cybersecurity professionals, similar to Nuclei. It enables automated security testing by scanning web applications, APIs, and network infrastructure for known vulnerabilities, misconfigurations, and security exposures. Like Nuclei, it uses template-based detection to identify security issues quickly and efficiently, making it an essential tool for penetration testers, security researchers, and DevSecOps teams.
 
 This tool is specifically designed for:
+
 - Web application security testing and vulnerability assessment
 - API security scanning and endpoint testing
 - Automated penetration testing workflows
@@ -38,27 +39,30 @@ git clone https://github.com/Shanmukhasrisai/go-vuln-scanner.git
 cd go-vuln-scanner
 
 # Build the project
-go build -o go-vuln-scanner
+go build -o govulnscanner cmd/govulnscanner/main.go
 
 # Run the scanner
-./go-vuln-scanner -target https://example.com
+./govulnscanner --target https://example.com
 ```
 
 ## Examples
 
 ### Example 1: Quick Web Application Scan
+
 ```bash
-./go-vuln-scanner -target https://mywebapp.com -output report.json
+./govulnscanner --target https://mywebapp.com --output scan-report.json
 ```
 
 ### Example 2: Comprehensive Network Scan
+
 ```bash
-./go-vuln-scanner -list network_hosts.txt -threads 25 -timeout 30 -verbose
+./govulnscanner --target-list network-hosts.txt --threads 25 --timeout 30 --verbose
 ```
 
 ### Example 3: Targeted Vulnerability Assessment
+
 ```bash
-./go-vuln-scanner -target https://api.example.com -tags cve,exposure -severity critical -output critical_vulns.json
+./govulnscanner --target https://api.example.com --tags cve,exposure --severity critical --output critical-vulnerabilities.json
 ```
 
 ## Contributing
