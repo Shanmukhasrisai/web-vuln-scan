@@ -154,13 +154,13 @@ if __name__ == "__main__":
 USAGE EXAMPLES:
 
 Basic vulnerability assessment:
-$ python vuln_scanner.py https://example.com
+$ python web_vuln_scan.py https://example.com
 
 Penetration testing with custom parameters:
-$ python vuln_scanner.py https://example.com --timeout 10 --threads 20
+$ python web_vuln_scan.py https://example.com --timeout 10 --threads 20
 
 Bug bounty scanning with JSON export:
-$ python vuln_scanner.py https://example.com --json findings_report.json
+$ python web_vuln_scan.py https://example.com --json findings_report.json
 
 CAPABILITIES:
  - Automated detection of 200+ CVE vulnerabilities with precise identification
