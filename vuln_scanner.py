@@ -1,8 +1,12 @@
 """
 WebVulnScanner - Enterprise-Grade Python Vulnerability Assessment Tool
-Detects over 200 CVEs with advanced scanning capabilities, configurable parameters, and comprehensive reporting. Designed for web application penetration testing and bug bounty programs.
+
+Identifies and reports vulnerabilities by their specific CVE (Common Vulnerabilities and Exposures) numbers and names, 
+with coverage for over 200 documented security flaws. Features advanced scanning capabilities, configurable parameters, 
+and comprehensive reporting. Designed for web application penetration testing and bug bounty programs.
 
 Features:
+- Precise CVE identification: Detects vulnerabilities and reports findings with official CVE identifiers
 - Extensive vulnerability database covering 200+ CVE signatures
 - Automated scanning of common attack vectors and sensitive endpoints
 - Multi-threaded architecture with configurable timeout and concurrency settings
@@ -61,7 +65,6 @@ class WebVulnScanner:
     def check_common_paths(self):
         print(f"[+] Enumerating sensitive endpoints on {self.target}")
         results = []
-
         def worker():
             while True:
                 path = pathq.get()
@@ -85,6 +88,7 @@ class WebVulnScanner:
             threads.append(t)
 
         pathq.join()
+
         for _ in range(self.threads):  # Stop workers
             pathq.put(None)
         for t in threads:
@@ -98,7 +102,6 @@ class WebVulnScanner:
             url = self.target + meta['path']
             resp = robust_get(url, self.timeout)
             finding = {'type': 'cve_test', 'cve': cve, 'url': url, 'status': 'not_detected', 'details': ''}
-
             if resp and resp.status_code == 200:
                 if meta['keyword']:
                     if meta['keyword'] in resp.text:
@@ -134,7 +137,7 @@ class WebVulnScanner:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Professional Web Application Vulnerability Scanner - Detects 200+ CVEs. "
+        description="Professional Web Application Vulnerability Scanner - Identifies and reports 200+ CVEs by their official numbers and names. "
                     "Designed for penetration testing engagements and bug bounty programs. "
                     "Features multi-threaded scanning, configurable parameters, and structured reporting."
     )
@@ -142,8 +145,8 @@ if __name__ == "__main__":
     parser.add_argument("--timeout", type=int, default=7, help="HTTP request timeout in seconds (default: 7)")
     parser.add_argument("--threads", type=int, default=8, help="Number of concurrent scanning threads (default: 8)")
     parser.add_argument("--json", type=str, default=None, help="Export findings to JSON file for integration and reporting")
-    args = parser.parse_args()
 
+    args = parser.parse_args()
     scanner = WebVulnScanner(args.target, timeout=args.timeout, threads=args.threads, integration_output=args.json)
     scanner.run()
 
@@ -160,7 +163,8 @@ Bug bounty scanning with JSON export:
 $ python vuln_scanner.py https://example.com --json findings_report.json
 
 CAPABILITIES:
- - Automated detection of 200+ CVE vulnerabilities
+ - Automated detection of 200+ CVE vulnerabilities with precise identification
+ - Each detected vulnerability is reported with its official CVE number and name
  - Identification of exposed sensitive endpoints and misconfigurations
  - Common attack surface enumeration (/admin, /.git, /.env, etc.)
 
@@ -170,6 +174,6 @@ CONFIGURATION OPTIONS:
  - --json FILE      : Export structured findings for integration with security platforms
 
 OUTPUT:
- Comprehensive security assessment including exposed paths, CVE detections, and 
+ Comprehensive security assessment including exposed paths, CVE detections with official identifiers, and 
  actionable findings suitable for penetration testing reports and bug bounty submissions.
 '''
