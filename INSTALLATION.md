@@ -68,6 +68,105 @@ docker run -d -p 8080:8080 \
   -e API_KEY="your-secret-key" \
   --name webvapt \
   webvapt:latest
+
+## About API_KEY
+
+**What is API_KEY?**
+API_KEY is a security token that authenticates your requests to WebVAPT. It's like a password for the API.
+
+**How to Generate an API Key?**
+
+You can generate one using any of these methods:
+
+### Method 1: Simple Secure Key (Recommended for beginners)
+```bash
+# On Linux/macOS/Windows PowerShell:
+echo "webvapt_$(date +%s)_$(openssl rand -hex 16)" | base64
+
+# Or simpler: just use this format
+webvapt_YOUR_SECRET_KEY_HERE
+```
+
+### Method 2: Using OpenSSL (Most Secure)
+```bash
+openssl rand -hex 32
+# Example output: 4a7f3c9d2e1b8f6a5c9d2e1b8f6a5c9d2e1b8f6a5c9d2e1b8f6a5c9d2e1b
+```
+
+### Method 3: Using Python
+```bash
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+### Method 4: Just Use a Simple Key
+```
+Your_Secure_API_Key_12345
+```
+
+**Example Docker Commands with API Keys:**
+
+### Simple Example (For Testing)
+```bash
+docker run -d -p 8080:8080 \
+  -e API_KEY="mySecureKey123" \
+  --name webvapt \
+  webvapt:latest
+```
+
+### Secure Example (For Production)
+```bash
+# Generate a secure key
+API_KEY=$(openssl rand -hex 32)
+
+# Run with secure key
+docker run -d -p 8080:8080 \
+  -e API_KEY="$API_KEY" \
+  -v $(pwd)/data:/root/data \
+  --name webvapt \
+  webvapt:latest
+
+# Save the key for later use
+echo "API Key: $API_KEY" > .webvapt-api-key
+```
+
+**Using API Key in Requests:**
+
+```bash
+# Start a scan with API key
+curl -X POST http://localhost:8080/api/v1/scans \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "target": "https://example.com",
+    "profile": "quick"
+  }'
+```
+
+**Important Security Tips:**
+
+1. **Never share your API key** - Keep it secret like a password
+2. **Rotate keys regularly** - Change them every few months
+3. **Use strong keys** - Use the OpenSSL method for security
+4. **Store securely** - Don't put keys in code or commit to git
+5. **Environment variables** - Store in .env file (don't commit)
+
+**Example .env file:**
+```
+API_KEY=4a7f3c9d2e1b8f6a5c9d2e1b8f6a5c9d
+DOCKER_IMAGE=webvapt:latest
+PORT=8080
+```
+
+**Load from .env file:**
+```bash
+source .env
+docker run -d -p $PORT:8080 \
+  -e API_KEY="$API_KEY" \
+  --name webvapt \
+  $DOCKER_IMAGE
+```
+
+---
 ```
 
 ### Step 4: Access Dashboard
