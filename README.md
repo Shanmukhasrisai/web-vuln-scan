@@ -1,3 +1,234 @@
+# web-vuln-scan
+
+A simple web vulnerability scanner written in Go, similar to Nuclei.
+
+## Overview
+
+web-vuln-scan is a lightweight vulnerability scanning tool for web applications. It loads vulnerability templates from JSON files and performs HTTP-based security assessments on specified targets.
+
+## Features
+
+- **Template-Based Scanning**: Load custom vulnerability signatures from JSON files
+- **Concurrent Scanning**: Multi-threaded scanning with configurable concurrency levels
+- **Flexible Targeting**: Scan multiple URLs with support for target files
+- **JSON Results**: Export scan results to JSON format for integration with other tools
+- **Status & Content Matching**: Match vulnerabilities based on HTTP status codes and response content
+- **TLS Support**: Works with HTTPS endpoints (with InsecureSkipVerify option)
+
+## Installation
+
+### From Source (Linux/macOS/Cloud Shell)
+
+```bash
+go install github.com/Shanmukhasrisai/web-vuln-scan@latest
+```
+
+Or clone and build:
+
+```bash
+git clone https://github.com/Shanmukhasrisai/web-vuln-scan.git
+cd web-vuln-scan
+go build -o web-vuln-scan main.go
+```
+
+### Requirements
+
+- Go 1.16 or higher
+- Linux, macOS, or any Unix-like environment (including Google Cloud Shell)
+
+## Usage
+
+### Basic Scan
+
+```bash
+web-vuln-scan -targets targets.txt -templates templates.json -output results.json
+```
+
+### Command-Line Options
+
+```
+-targets string
+  File containing target URLs (one per line) [REQUIRED]
+  
+-templates string
+  JSON file containing vulnerability templates (default: "templates.json")
+  
+-concurrency int
+  Number of concurrent scans (default: 10)
+  
+-timeout int
+  HTTP timeout in seconds (default: 10)
+  
+-output string
+  Output file for scan results (default: "results.json")
+  
+-verbose
+  Enable verbose output
+```
+
+### Example
+
+1. Create `targets.txt`:
+   ```
+   http://example.com
+   https://example.org
+   ```
+
+2. Create `templates.json`:
+   ```json
+   [
+     {
+       "id": "test-vuln-1",
+       "name": "Test Vulnerability",
+       "description": "A test vulnerability detection",
+       "severity": "medium",
+       "path": "/test",
+       "method": "GET",
+       "match_string": "vulnerable",
+       "status_code": 200,
+       "tags": ["test"],
+       "cve": ""
+     }
+   ]
+   ```
+
+3. Run the scanner:
+   ```bash
+   web-vuln-scan -targets targets.txt -templates templates.json -verbose
+   ```
+
+## Template Format
+
+Vulnerability templates are JSON objects with the following structure:
+
+```json
+{
+  "id": "unique-identifier",
+  "name": "Vulnerability Name",
+  "description": "Description of the vulnerability",
+  "severity": "critical|high|medium|low",
+  "path": "/endpoint",
+  "method": "GET|POST|PUT|DELETE",
+  "match_string": "string-to-match-in-response",
+  "status_code": 200,
+  "tags": ["tag1", "tag2"],
+  "cve": "CVE-2024-XXXXX"
+}
+```
+
+### Fields
+
+- **id**: Unique identifier for the template
+- **name**: Display name of the vulnerability
+- **description**: Details about the vulnerability
+- **severity**: Severity level
+- **path**: Endpoint path to scan
+- **method**: HTTP method
+- **match_string**: String to look for in response (optional)
+- **status_code**: Expected HTTP status code (0 = any)
+- **tags**: Categories or classifications
+- **cve**: CVE identifier if applicable
+
+## Output Format
+
+Results are saved to JSON with the following structure:
+
+```json
+[
+  {
+    "target": "http://example.com",
+    "vulnerability": "Vulnerability Name",
+    "severity": "high",
+    "description": "Description",
+    "timestamp": "2024-01-02T10:30:45Z",
+    "cve": "CVE-2024-XXXXX",
+    "tags": ["tag1", "tag2"]
+  }
+]
+```
+
+## Cross-Platform Compatibility
+
+web-vuln-scan works on:
+
+- **Linux** (Ubuntu, Debian, CentOS, etc.)
+- **macOS** (Intel and Apple Silicon)
+- **Google Cloud Shell**
+- **Windows** (with WSL2 or native Go)
+
+### Quick Start on Cloud Shell
+
+```bash
+# In Google Cloud Shell:
+go install github.com/Shanmukhasrisai/web-vuln-scan@latest
+export PATH=$PATH:$(go env GOPATH)/bin
+web-vuln-scan -targets targets.txt -templates templates.json
+```
+
+## Building from Source on Linux/macOS
+
+```bash
+# Clone the repository
+git clone https://github.com/Shanmukhasrisai/web-vuln-scan.git
+cd web-vuln-scan
+
+# Build
+go build -o web-vuln-scan main.go
+
+# Run
+./web-vuln-scan -targets targets.txt -templates templates.json -verbose
+```
+
+## Project Structure
+
+```
+web-vuln-scan/
+├── main.go              # Main scanner logic
+├── go.mod              # Go module definition
+├── README.md           # This file
+├── targets.txt.example # Example targets file
+└── templates.json      # Vulnerability templates (create as needed)
+```
+
+## Example Use Cases
+
+1. **Web Application Security Testing**: Scan internal or authorized web applications
+2. **Vulnerability Research**: Test custom detection signatures
+3. **Security Training**: Educational lab environment
+4. **Integration**: Use as a component in CI/CD security pipelines
+
+## Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Add tests for new functionality
+4. Submit a pull request
+
+## Disclaimer
+
+**LEGAL WARNING**: This tool is intended ONLY for authorized security testing on systems you own or have explicit written permission to test. Unauthorized access to computer systems is illegal. Users are responsible for ensuring all testing is conducted legally and ethically.
+
+## License
+
+MIT License - See LICENSE file for details
+
+## Support
+
+For issues, feature requests, or questions:
+- Open an issue on GitHub
+- Check existing issues for solutions
+
+## Roadmap
+
+Future enhancements may include:
+- Advanced payload mutation and encoding
+- Multi-protocol support (DNS, TCP, etc.)
+- Interactive reporting and dashboards
+- Integration with other security tools
+- Kubernetes deployment templates
+- Web API server mode
 # WebVAPT - Professional Web Vulnerability Assessment & Penetration Testing Tool
 
 ## Expert-Grade Web Security Auditing Platform for Security Researchers
