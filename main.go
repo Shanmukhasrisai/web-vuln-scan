@@ -3,10 +3,10 @@ package main
 import (
 	"bufio"
 	"crypto/tls"
+	 "io"
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -79,7 +79,7 @@ func NewScanner(targets []string, concurrency int, timeout time.Duration) *Scann
 // LoadTemplates loads vulnerability templates from a JSON file for web application penetration testing
 // Supports comprehensive security testing configurations
 func (s *Scanner) LoadTemplates(filename string) error {
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("failed to read template file: %v", err)
 	}
@@ -143,7 +143,7 @@ func (s *Scanner) checkVulnerability(target string, template VulnTemplate) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		if s.Verbose {
 			log.Printf("Error reading response from %s: %v\n", url, err)
