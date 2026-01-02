@@ -1,0 +1,14 @@
+[
+  {
+    "id": "test-basic",
+    "name": "Test Endpoint",
+    "description": "Tests for a basic endpoint response",
+    "severity": "low",
+    "path": "/api/test",
+    "method": "GET",
+    "match_string": "test",
+    "status_code": 200,
+    "tags": ["test"],
+    "cve": ""
+  }
+]
