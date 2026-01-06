@@ -298,6 +298,61 @@ kubectl apply -f k8s/deployment.yaml
 kubectl port-forward svc/webvapt 8080:8080 -n security-tools
 ```
 
+
+## Reporting Modes
+
+web-vuln-scan generates three report types from the same scan data to match different audiences.
+
+- **Developer report**  
+  - Full technical details, HTTP request/response evidence and payloads.  
+  - Affected parameters, CVE/CWE/OWASP mappings and code-level remediation guidance.
+
+- **Customer / management report**  
+  - Executive summary, risk heatmap and vulnerability counts by severity.  
+  - OWASP Top 10 and compliance mapping (PCI, ISO 27001, NIST), plus business impact and high-level remediation plan.
+
+- **Researcher report**  
+  - Focus on exploit chains, PoCs and attack paths.  
+  - CVSS scoring, references (NVD/MITRE/advisories) and bug-bounty friendly narrative.
+
+Each report type can be exported as:
+
+- HTML (interactive, web dashboard)  
+- PDF (client-ready)  
+- DOCX / Markdown (for further editing or ISO audit packs)
+
+Example:
+
+```bash
+web-vuln-scan report --scan-id 1234 \
+  --mode developer \
+  --format pdf \
+  --output reports/dev-report-1234.pdf
+```
+
+
+## Web Dashboard
+
+The built-in WebVAPT dashboard runs on localhost and can be accessed both from a Linux VM and the host machine.
+
+- Start the server:
+
+```bash
+web-vuln-scan server --host 0.0.0.0 --port 8080
+# or via Docker / Kubernetes as shown below
+```
+
+- Access from:
+  - VM browser: `http://127.0.0.1:8080`
+  - Host browser: `http://<vm-local-ip>:8080`
+
+From the dashboard you can:
+
+- Add targets (single URL, list file or asset group).
+- Choose scan mode: Quick / Light / Aggressive.  
+- Choose report type: Developer / Customer / Researcher.  
+- Export reports as HTML, PDF or DOCX with OWASP/CWE/compliance mapping.
+
 ## Core Architecture
 
 ### Scanning Engine
@@ -358,6 +413,23 @@ GET    /api/v1/config             # Current configuration
   "evidence": "Full HTTP request/response",
   "remediation": "Recommended fixes"
 }
+```
+
+
+## Scan Modes
+
+web-vuln-scan supports three predefined scan profiles that can be run from CLI or via the WebVAPT dashboard.
+
+- **Quick**: Fast health-check style scan with limited templates and low resource usage. Targets core OWASP Top 10 checks and basic misconfigurations only.
+- **Light**: Safe production-friendly profile focusing on OWASP Top 10 and common web vulns with non-destructive payloads. Suitable for continuous scanning on live environments.
+- **Aggressive**: Full template set with heavy payloads, fuzzing and deeper coverage. May trigger WAFs, rate limits or app-side issues and should be used only in approved test environments.
+
+Select the profile:
+
+```bash
+web-vuln-scan scan -u https://target.tld --profile quick
+web-vuln-scan scan -u https://target.tld --profile light
+web-vuln-scan scan -u https://target.tld --profile aggressive
 ```
 
 ## Configuration Profiles
