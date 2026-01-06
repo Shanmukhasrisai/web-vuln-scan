@@ -1,0 +1,38 @@
+# WebVAPT Scan Profiles Configuration
+# Defines three predefined scan modes for different scenarios
+
+profiles:
+  quick:
+    description: "Fast health-check scan with limited templates"
+    threads: 10
+    timeout: 5s
+    rate_limit: 20
+    safe_mode: true
+    owasp_top_10_only: true
+    templates_limit: 50
+    payloads_limit: 100
+
+  light:
+    description: "Safe production-friendly scan focused on OWASP Top 10"
+    threads: 25
+    timeout: 15s
+    rate_limit: 50
+    safe_mode: true
+    owasp_top_10_only: true
+    templates_limit: 150
+    payloads_limit: 500
+    skip_intrusive: true
+
+  aggressive:
+    description: "Deep intrusive scan with full payloads and fuzzing"
+    threads: 100
+    timeout: 30s
+    rate_limit: 0          # unlimited
+    safe_mode: false
+    owasp_top_10_only: false
+    templates_limit: 1000
+    payloads_limit: 5000
+    enable_fuzzing: true
+    enable_encoding_chains: true
+    enable_advanced_payloads: true
+    skip_intrusive: false
