@@ -593,4 +593,230 @@ For enterprise support, custom development, and consulting services:
 
 ---
 
+## VAPT & Bug Bounty Use Cases
+
+web-vuln-scan is specifically designed for professional vulnerability assessment and penetration testing (VAPT) professionals and bug bounty hunters:
+
+### 🎯 Vulnerability Assessment & Penetration Testing (VAPT)
+
+- **Comprehensive Assessment**: Conduct systematic web application vulnerability assessments on authorized targets
+- **Template Customization**: Create custom vulnerability signatures for organization-specific security policies
+- **Evidence Collection**: Generate detailed findings with HTTP request/response evidence for client reports
+- **Compliance Mapping**: Automatic OWASP Top 10, CWE, and CVSS scoring for compliance requirements (PCI DSS, HIPAA, SOC 2)
+- **Scan Profiles**: Use Quick, Light, or Aggressive profiles based on testing requirements
+- **Professional Reporting**: Export findings as PDF, HTML, or Markdown for executive presentations
+
+### 🐛 Bug Bounty Hunter Features
+
+- **Rapid Vulnerability Discovery**: Quickly scan target applications for known vulnerability patterns
+- **Custom Payload Support**: Create targeted payloads for specific vulnerability classes
+- **Automation Ready**: Integrate into scripts and workflows for bulk target scanning
+- **Report Generation**: Researcher-friendly reports with PoC details and remediation guidance
+- **Multi-Protocol Support**: Test HTTP, HTTPS, DNS, TCP, SSL/TLS, and WebSocket endpoints
+- **Integration Capabilities**: Export results in multiple formats for bug bounty platforms
+
+## Virtual Machine & Local Deployment
+
+### Installing on Virtual Machines
+
+web-vuln-scan is ideal for isolated lab environments and VM-based testing:
+
+#### Prerequisites
+- Go 1.16 or higher installed on your VM
+- Linux distribution (Ubuntu 20.04 LTS recommended) or any Unix-like environment
+
+#### Installation Steps
+
+1. **Update your VM**
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y golang-go
+```
+
+2. **Install web-vuln-scan**
+```bash
+go install github.com/Shanmukhasrisai/web-vuln-scan@latest
+export PATH=$PATH:$(go env GOPATH)/bin
+```
+
+3. **Verify Installation**
+```bash
+web-vuln-scan -help
+```
+
+### Running Scanner on Local Network
+
+Access the web dashboard from other machines on your local network:
+
+```bash
+# Start server listening on all interfaces
+web-vuln-scan server --host 0.0.0.0 --port 8080
+```
+
+Then access from:
+- **Local VM**: `http://127.0.0.1:8080`
+- **Other machines on network**: `http://<VM-IP>:8080`
+- **Example**: `http://192.168.1.100:8080`
+
+### Docker Deployment (Quick Setup)
+
+Quickly deploy web-vuln-scan in a container:
+
+```bash
+# Build the Docker image
+docker build -t web-vuln-scan .
+
+# Run on local network
+docker run -p 8080:8080 \\
+  -e API_KEY="your-secure-key" \\
+  -v $(pwd)/templates:/root/templates \\
+  web-vuln-scan server --host 0.0.0.0 --port 8080
+```
+
+Access from: `http://0.0.0.0:8080` (or your machine IP)
+
+## Automation & CI/CD Integration
+
+### Command-Line Automation
+
+Automate vulnerability scanning in your CI/CD pipeline:
+
+```bash
+# Scan a single target
+web-vuln-scan -targets targets.txt -templates templates.json -output results.json -verbose
+
+# Scan with custom profile
+web-vuln-scan scan -u https://target.tld --profile light --output report.json
+
+# Batch scanning multiple targets
+for target in $(cat url_list.txt); do
+  web-vuln-scan -targets <(echo $target) -templates templates.json -output results-$target.json
+done
+```
+
+### GitHub Actions Integration
+
+Add automated scanning to your GitHub workflow:
+
+```yaml
+name: Security Vulnerability Scan
+
+on: [push, pull_request]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.21
+      
+      - name: Install web-vuln-scan
+        run: go install github.com/Shanmukhasrisai/web-vuln-scan@latest
+      
+      - name: Run vulnerability scan
+        run: |
+          web-vuln-scan -targets targets.txt \
+          -templates templates.json \
+          -output scan-results.json
+      
+      - name: Upload results
+        uses: actions/upload-artifact@v2
+        with:
+          name: scan-results
+          path: scan-results.json
+```
+
+### REST API for Automation
+
+Integrate via REST API endpoints:
+
+```bash
+# Create a new scan
+curl -X POST http://localhost:8080/api/v1/scans \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "targets": ["https://target.tld"],
+    "profile": "light",
+    "report_type": "researcher"
+  }'
+
+# Get scan status
+curl -X GET http://localhost:8080/api/v1/scans/scan_123 \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Fetch results
+curl -X GET http://localhost:8080/api/v1/scans/scan_123/results \
+  -H "Authorization: Bearer YOUR_API_KEY" > results.json
+```
+
+### Python Script Automation
+
+Automate scanning programmatically:
+
+```python
+import json
+import subprocess
+import os
+
+def scan_target(target_url, profile="light"):
+    """Run vulnerability scan on target"""
+    cmd = [
+        "web-vuln-scan",
+        "scan",
+        "-u", target_url,
+        "--profile", profile,
+        "--output", f"results-{target_url.replace('https://', '')}.json"
+    ]
+    
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    return result.returncode == 0
+
+# Batch scan multiple targets
+targets = [
+    "https://app1.example.com",
+    "https://app2.example.com",
+    "https://app3.example.com"
+]
+
+for target in targets:
+    print(f"Scanning {target}...")
+    scan_target(target)
+    print(f"Completed {target}")
+```
+
+## Lifecycle Management
+
+### Development Lifecycle
+
+1. **Setup Phase**: Install on VM or cloud environment
+2. **Configuration Phase**: Create custom templates for your organization
+3. **Testing Phase**: Run Quick scans for initial validation
+4. **Assessment Phase**: Execute Light or Aggressive scans based on risk
+5. **Reporting Phase**: Generate compliance-mapped reports
+6. **Remediation Phase**: Track and verify fixes
+
+### Continuous Monitoring
+
+```bash
+# Schedule daily scans using cron
+0 2 * * * /usr/local/bin/web-vuln-scan -targets /opt/targets.txt -templates /opt/templates.json -output /var/log/scans/daily-$(date +%Y%m%d).json
+```
+
+### Version Management
+
+Keep web-vuln-scan updated:
+
+```bash
+# Update to latest version
+go install github.com/Shanmukhasrisai/web-vuln-scan@latest
+
+# Verify version
+web-vuln-scan --version
+```
+
 **WebVAPT** - Empowering security researchers with professional-grade vulnerability assessment tools.
