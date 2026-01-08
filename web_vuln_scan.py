@@ -64,7 +64,8 @@ class WebVulnScanner:
 
     def check_common_paths(self):
         print(f"[+] Enumerating sensitive endpoints on {self.target}")
-        results = []
+            pathq = queue.Queue()
+            results = []
         def worker():
             while True:
                 path = pathq.get()
@@ -77,7 +78,6 @@ class WebVulnScanner:
                     print(f"[!] Exposed endpoint detected: {url}")
                 pathq.task_done()
 
-        pathq = queue.Queue()
         for path in COMMON_PATHS:
             pathq.put(path)
 
