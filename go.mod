@@ -1,5 +1,4 @@
-module github.com/Shanmukhasrisai/go-vuln-scanner
-
+module github.com/Shanmukhasrisai/web-vuln-scan
 go 1.21
 
 require (
